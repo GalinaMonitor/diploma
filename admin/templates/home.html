@@ -1,0 +1,14 @@
+{% extends 'admin/master.html' %}
+
+{% block body %}
+	<h1>Дашборд</h1>
+	{% for sensor in sensors %}
+	<h2>Датчик {{ sensor.id }} {{ sensor.zone }}</h2>
+	<h3>Последние данные</h3>
+	<ol>
+		{% for data in sensor.sensor_info[:5] %}
+		<li>{{ data.datetime }} {{ data.data }}</li>
+		{% endfor %}
+	</ol>
+	{% endfor %}
+{% endblock %}

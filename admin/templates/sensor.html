@@ -1,0 +1,37 @@
+{% extends 'admin/model/edit.html' %}
+
+{% block body %}
+	<p> </p>
+	<h3>Датчик {{ sensor.id }} - тип {{ sensor.type }} - зона {{ sensor.zone }}</h3>
+	<h4>График динамики данных</h4>
+	<div>
+		<canvas id="myChart"></canvas>
+	</div>
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+	<script>
+		const ctx = document.getElementById('myChart');
+		let data = {{ sensor_info|safe }};
+		let labels = data.map(a => a.datetime);
+		data = data.map(a => a.num);
+
+		new Chart(ctx, {
+			type: 'line',
+			data: {
+				labels: labels,
+				datasets: [{
+					label: 'Данные',
+					data: data,
+					borderWidth: 1
+				}]
+			},
+			options: {
+				scales: {
+					y: {
+						beginAtZero: true
+					}
+				}
+			}
+		});
+	</script>
+	{{ super() }}
+{% endblock %}
