@@ -5,7 +5,7 @@ networks:
     ipam:
       driver: default
       config:
-        - subnet: "11.1.0.100/24"
+        - subnet: "11.1.0.0/24"
 
 services:
   diploma:
