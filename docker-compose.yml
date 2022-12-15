@@ -5,13 +5,13 @@ networks:
     ipam:
       driver: default
       config:
-        - subnet: "10.1.1.100/24"
+        - subnet: "11.1.1.100/24"
 
 services:
   diploma:
     networks:
       network:
-        ipv4_address: 10.1.1.11
+        ipv4_address: 11.1.1.11
     image: gmonitor/diploma-diploma
     env_file:
       - .env
@@ -25,7 +25,7 @@ services:
   admin:
     networks:
       network:
-        ipv4_address: 10.1.1.13
+        ipv4_address: 11.1.1.13
     image: gmonitor/diploma-diploma
     env_file:
       - .env
@@ -40,7 +40,7 @@ services:
   postgres:
     networks:
       network:
-        ipv4_address: 10.1.1.100
+        ipv4_address: 11.1.1.100
     image: postgres:13.3
     container_name: postgres
     env_file:
