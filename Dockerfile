@@ -24,6 +24,6 @@ WORKDIR $PYSETUP_PATH
 COPY ./poetry.lock ./pyproject.toml ./
 RUN poetry install
 
-COPY .. .
+COPY . .
 
 CMD ["uvicorn", "backend.main:app", "--reload"]
