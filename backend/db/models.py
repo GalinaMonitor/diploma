@@ -1,11 +1,11 @@
-from uuid import UUID, uuid4
 from datetime import datetime
 from enum import Enum
 from typing import Optional, List
+from uuid import UUID, uuid4
 
 from sqlalchemy import Column, Integer
-from sqlalchemy.dialects.postgresql import UUID as SQLUUID
 from sqlmodel import SQLModel, Field, Relationship
+from sqlmodel.sql.sqltypes import GUID
 
 
 class SensorType(int, Enum):
@@ -21,7 +21,7 @@ class Zone(int, Enum):
 
 
 class Sensor(SQLModel, table=True):
-	id: UUID = Field(sa_column=Column(SQLUUID, primary_key=True, default=uuid4))
+	id: UUID = Field(sa_column=Column(GUID, as_uuid=True, primary_key=True, default=uuid4))
 	type: SensorType
 	zone: Zone
 	sensor_info: List['SensorInfo'] = Relationship(back_populates="sensor")
