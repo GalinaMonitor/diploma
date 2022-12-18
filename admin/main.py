@@ -21,7 +21,7 @@ def get_locale():
 
 
 app.config.from_prefixed_env()
-db = SQLAlchemy()
+db = SQLAlchemy(session_options={"autoflush": False})
 db.init_app(app)
 
 type_dict = {
@@ -43,13 +43,10 @@ class DashBoardView(AdminIndexView):
 		sensors = db.session.scalars(
 			select(Sensor)
 		).all()
-		formatted_sensors = []
 		for sensor in sensors:
-			sensor = Sensor(**sensor.dict())
 			sensor.type = type_dict[sensor.type]
 			sensor.zone = zone_dict[sensor.zone]
-			formatted_sensors.append(sensor)
-		return self.render('home.html', sensors=formatted_sensors)
+		return self.render('home.html', sensors=sensors)
 
 
 # set optional bootswatch theme
