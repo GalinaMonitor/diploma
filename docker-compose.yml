@@ -55,7 +55,7 @@ services:
   nginx:
     networks:
       network:
-        ipv4_address: 11.1.0.135
+        ipv4_address: 11.1.0.108
     image: nginx
     ports:
       - "80:80"
