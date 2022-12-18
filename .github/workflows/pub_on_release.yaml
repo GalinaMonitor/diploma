@@ -34,5 +34,6 @@ jobs:
           port: ${{ secrets.PORT }}
           script: |
             cd /opt/diploma
+            git pull
             echo '${{ secrets.DOCKER_PWD }}' | docker login -u ${{ secrets.DOCKER_LOGIN }} --password-stdin
             docker compose pull && docker compose up --build -d
