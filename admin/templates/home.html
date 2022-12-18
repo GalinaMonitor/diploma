@@ -3,8 +3,8 @@
 {% block body %}
 	<h1>Дашборд</h1>
 	{% for sensor in sensors %}
-	<h2>Датчик {{ sensor.id }} {{ sensor.zone }}</h2>
-	<h3>Последние данные</h3>
+	<h3>Датчик {{ sensor.id }} зона {{ sensor.zone }} тип {{ sensor.type }}</h3>
+	<h4>Последние данные</h4>
 	<ol>
 		{% for data in sensor.sensor_info[:5] %}
 		<li>{{ data.datetime }} {{ data.data }}</li>

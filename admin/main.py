@@ -2,14 +2,12 @@ from flask import Flask, session
 from flask.globals import request
 from flask_admin import Admin, expose, AdminIndexView
 from flask_admin.contrib.sqla import ModelView
-from flask_admin.contrib.sqla.form import InlineModelConverter
-from flask_admin.model import InlineFormAdmin
 from flask_admin.model.helpers import get_mdict_item_or_list
 from flask_babelex import Babel
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import select
 
-from backend.db.models import Sensor, SensorInfo
+from backend.db.models import Sensor
 
 app = Flask(__name__)
 babel = Babel(app)
@@ -26,6 +24,18 @@ app.config.from_prefixed_env()
 db = SQLAlchemy()
 db.init_app(app)
 
+type_dict = {
+	0: 'Влажность',
+	1: 'Тепло'
+}
+
+zone_dict = {
+	0: 'Зона A',
+	1: 'Зона B',
+	2: 'Зона C',
+	3: 'Зона D'
+}
+
 
 class DashBoardView(AdminIndexView):
 	@expose('/')
@@ -33,7 +43,13 @@ class DashBoardView(AdminIndexView):
 		sensors = db.session.scalars(
 			select(Sensor)
 		).all()
-		return self.render('home.html', sensors=sensors)
+		formatted_sensors = []
+		for sensor in sensors:
+			sensor = Sensor(**sensor.dict())
+			sensor.type = type_dict[sensor.type]
+			sensor.zone = zone_dict[sensor.zone]
+			formatted_sensors.append(sensor)
+		return self.render('home.html', sensors=formatted_sensors)
 
 
 # set optional bootswatch theme
@@ -51,35 +67,24 @@ admin = Admin(
 )
 
 
-class SensorInfoInlineAdmin(InlineFormAdmin):
-	inline_converter = InlineModelConverter
-	form_columns = ['id', 'datetime', 'data']
-	column_labels = {
-		'id': 'id',
-		'datetime': 'Дата и время',
-		'data': 'Данные'
-	}
-
-
 class SensorView(ModelView):
-	form_columns = ['id', 'type', 'zone', 'sensor_info']
+	form_columns = ['id', 'type', 'zone']
+	list_columns = ['id', 'type', 'zone']
 	column_searchable_list = ['id']
 	column_filters = ['type', 'zone']
 	form_choices = {
-		'type': [(0, 'Влажность'), (1, 'Тепло')],
-		'zone': [(0, 'Зона A'), (1, 'Зона B'), (2, 'Зона C'), (3, 'Зона D')]
+		'type': type_dict.items(),
+		'zone': zone_dict.items()
 	}
 	column_choices = {
-		'type': [(0, 'Влажность'), (1, 'Тепло')],
-		'zone': [(0, 'Зона A'), (1, 'Зона B'), (2, 'Зона C'), (3, 'Зона D')]
+		'type': type_dict.items(),
+		'zone': zone_dict.items()
 	}
 	column_labels = {
 		'id': 'id',
 		'type': 'Тип',
 		'zone': 'Зона',
-		'sensor_info': 'Данные',
 	}
-	inline_models = [SensorInfoInlineAdmin(SensorInfo)]
 	edit_template = 'sensor.html'
 
 	@expose('/edit/', methods=('GET', 'POST'))
