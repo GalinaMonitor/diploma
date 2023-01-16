@@ -7,6 +7,9 @@
 	<div>
 		<canvas id="myChart"></canvas>
 	</div>
+	{% if warning %}
+	<div style="background: red">Значение датчика достигло лимита</div>
+	{% endif %}
 	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 	<script>
 		const ctx = document.getElementById('myChart');

@@ -65,8 +65,8 @@ admin = Admin(
 
 
 class SensorView(ModelView):
-	form_columns = ['id', 'type', 'zone']
-	list_columns = ['id', 'type', 'zone']
+	form_columns = ['id', 'type', 'zone', 'max_value']
+	list_columns = ['id', 'type', 'zone', 'max_value']
 	column_searchable_list = ['id']
 	column_filters = ['type', 'zone']
 	form_choices = {
@@ -81,6 +81,7 @@ class SensorView(ModelView):
 		'id': 'id',
 		'type': 'Тип',
 		'zone': 'Зона',
+		'max_value': 'Максимальное значение'
 	}
 	edit_template = 'sensor.html'
 
@@ -92,8 +93,11 @@ class SensorView(ModelView):
 			select(Sensor).where(Sensor.id == sensor_id)
 		).one()
 		sensor_info = [{'datetime': x.datetime.strftime("%y-%m-%d"), 'num': x.data} for x in sensor.sensor_info]
+		max_value = max(sensor_info, key=lambda x: x['num'])['num']
 		self._template_args['sensor_info'] = sensor_info
 		self._template_args['sensor'] = sensor
+
+		self._template_args['warning'] = max_value > sensor.max_value
 		res = super().edit_view()
 		return res
 

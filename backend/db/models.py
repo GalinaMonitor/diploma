@@ -25,6 +25,7 @@ class Sensor(SQLModel, table=True):
 	type: SensorType
 	zone: Zone
 	sensor_info: List['SensorInfo'] = Relationship(back_populates="sensor")
+	max_value: int
 
 
 class SensorInfo(SQLModel, table=True):
