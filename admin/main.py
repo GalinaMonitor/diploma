@@ -7,7 +7,7 @@ from flask_babelex import Babel
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import select
 
-from backend.db.models import Sensor
+from backend.db.models import Sensor, Device
 
 app = Flask(__name__)
 babel = Babel(app)
@@ -36,6 +36,12 @@ zone_dict = {
 	3: 'Зона D'
 }
 
+operating_mode_dict = {
+	0: 'LOW',
+	1: 'MEDIUM',
+	2: 'HIGH',
+}
+
 
 class DashBoardView(AdminIndexView):
 	@expose('/')
@@ -46,6 +52,8 @@ class DashBoardView(AdminIndexView):
 		for sensor in sensors:
 			sensor.type = type_dict[sensor.type]
 			sensor.zone = zone_dict[sensor.zone]
+			for sensor_data in sensor.sensor_info:
+				sensor_data.datetime = sensor_data.datetime.strftime("%Y-%m-%d %H:%M")
 		return self.render('home.html', sensors=sensors)
 
 
@@ -65,8 +73,8 @@ admin = Admin(
 
 
 class SensorView(ModelView):
-	form_columns = ['id', 'type', 'zone', 'max_value']
-	list_columns = ['id', 'type', 'zone', 'max_value']
+	form_columns = ['id', 'name', 'type', 'zone', 'max_value']
+	list_columns = ['id', 'name', 'type', 'zone', 'max_value']
 	column_searchable_list = ['id']
 	column_filters = ['type', 'zone']
 	form_choices = {
@@ -79,6 +87,7 @@ class SensorView(ModelView):
 	}
 	column_labels = {
 		'id': 'id',
+		'name': 'Название',
 		'type': 'Тип',
 		'zone': 'Зона',
 		'max_value': 'Максимальное значение'
@@ -102,4 +111,29 @@ class SensorView(ModelView):
 		return res
 
 
+class DeviceView(ModelView):
+	form_columns = ['id', 'name', 'is_active', 'operating_mode', 'zone', 'sensor_id', 'sensor']
+	list_columns = ['id', 'name', 'is_active', 'operating_mode', 'zone', 'sensor_id', 'sensor']
+	column_searchable_list = ['id']
+	column_filters = ['zone']
+	form_choices = {
+		'operating_mode': operating_mode_dict.items(),
+		'zone': zone_dict.items()
+	}
+	column_choices = {
+		'zone': zone_dict.items(),
+		'operating_mode': operating_mode_dict.items(),
+	}
+	column_labels = {
+		'id': 'id',
+		'name': 'Название',
+		'sensor': 'Связанный датчик',
+		'is_active': 'Активен',
+		'zone': 'Зона',
+		'operating_mode': 'Режим работы',
+		'sensor_id': 'ID связанного датчика'
+	}
+
+
 admin.add_view(SensorView(Sensor, db.session, 'Датчики'))
+admin.add_view(DeviceView(Device, db.session, 'Устройства'))

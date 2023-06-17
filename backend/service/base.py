@@ -24,3 +24,16 @@ class BaseService:
 		self.session.add(new_model)
 		await self.session.commit()
 		return new_model
+
+	async def update(self, id: int, data):
+		statement = select(self.model).where(self.model.id == id)
+		results = await self.session.execute(statement)
+		model = results.scalar_one_or_none()
+		if not model:
+			raise NotFoundException()
+		for key, value in data.dict(exclude_unset=True).items():
+			setattr(model, key, value)
+		self.session.add(model)
+		await self.session.commit()
+		await self.session.refresh(model)
+		return model

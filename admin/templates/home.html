@@ -1,14 +1,24 @@
 {% extends 'admin/master.html' %}
 
+
 {% block body %}
-	<h1>Дашборд</h1>
-	{% for sensor in sensors %}
-	<h3>Датчик {{ sensor.id }} зона {{ sensor.zone }} тип {{ sensor.type }}</h3>
-	<h4>Последние данные</h4>
-	<ol>
+
+<h1>Дашборд</h1>
+{% for sensor in sensors %}
+<h4 style="margin-top: 15px">Датчик {{ sensor.id }}</h4>
+<p>{{ sensor.zone }} тип {{ sensor.type }}</p>
+	<table style="border: 1px solid grey;">
+		<tr>
+			<th style="border: 1px solid grey; padding-right: 20px">Значение</th>
+			<th style="border: 1px solid grey; padding-right: 20px">Дата</th>
+		</tr>
 		{% for data in sensor.sensor_info[:5] %}
-		<li>{{ data.datetime }} {{ data.data }}</li>
+		<tr>
+			<td style="border: 1px solid grey; padding-right: 20px">{{ data.data }}</td>
+			<td style="border: 1px solid grey; padding-right: 20px">{{ data.datetime }}</td>
+		</tr>
 		{% endfor %}
-	</ol>
-	{% endfor %}
+	</table>
+
+{% endfor %}
 {% endblock %}
